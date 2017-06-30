@@ -1,0 +1,57 @@
+{
+    "_readme": [
+        "This file locks the dependencies of your project to a known state",
+        "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#composer-lock-the-lock-file",
+        "This file is @generated automatically"
+    ],
+    "hash": "2c3b39f5daba78fff94aa449e48596ca",
+    "content-hash": "28477f1dd6dfc61a5ba9d84942b31b20",
+    "packages": [
+        {
+            "name": "php-cli/php-cli",
+            "version": "dev-master",
+            "source": {
+                "type": "git",
+                "url": "git@github.com:thebra/php-cli.git",
+                "reference": "31d70f14cf3e17fdf1544a862d0a479fa4fc3e06"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/thebra/php-cli/zipball/31d70f14cf3e17fdf1544a862d0a479fa4fc3e06",
+                "reference": "31d70f14cf3e17fdf1544a862d0a479fa4fc3e06",
+                "shasum": ""
+            },
+            "require": {
+                "php": ">=5.2.0"
+            },
+            "type": "library",
+            "notification-url": "https://packagist.org/downloads/",
+            "license": [
+                "Apache-2.0"
+            ],
+            "authors": [
+                {
+                    "name": "Jason Bradley",
+                    "email": "jason.bradley@gmail.com"
+                }
+            ],
+            "description": "A simple command-line interface (CLI) helper for PHP.",
+            "homepage": "http://github.com/thebra/php-cli",
+            "keywords": [
+                "cli",
+                "command-line"
+            ],
+            "time": "2015-06-15 19:26:30"
+        }
+    ],
+    "packages-dev": [],
+    "aliases": [],
+    "minimum-stability": "dev",
+    "stability-flags": {
+        "php-cli/php-cli": 20
+    },
+    "prefer-stable": false,
+    "prefer-lowest": false,
+    "platform": [],
+    "platform-dev": []
+}

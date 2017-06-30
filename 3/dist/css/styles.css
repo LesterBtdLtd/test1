@@ -1,0 +1,259 @@
+/**
+ * Global Reset of all HTML Elements
+ *
+ * Resetting all of our HTML Elements ensures a smoother
+ * visual transition between browsers. If you don't believe me,
+ * try temporarily commenting out this block of code, then go
+ * and look at Mozilla versus Safari, both good browsers with
+ * a good implementation of CSS. The thing is, all browser CSS
+ * defaults are different and at the end of the day if visual
+ * consistency is what we're shooting for, then we need to
+ * make sure we're resetting all spacing elements.
+ *
+ */
+html,
+body {
+  border: 0;
+  font-family: "Helvetica-Neue", "Helvetica", Arial, sans-serif;
+  line-height: 1.5;
+  margin: 0;
+  padding: 0;
+}
+div,
+span,
+object,
+iframe,
+img,
+table,
+caption,
+thead,
+tbody,
+tfoot,
+tr,
+tr,
+td,
+article,
+aside,
+canvas,
+details,
+figure,
+hgroup,
+menu,
+nav,
+footer,
+header,
+section,
+summary,
+mark,
+audio,
+video {
+  border: 0;
+  margin: 0;
+  padding: 0;
+}
+h1,
+h2,
+h3,
+h4,
+h5,
+h6,
+p,
+blockquote,
+pre,
+a,
+abbr,
+address,
+cit,
+code,
+del,
+dfn,
+em,
+ins,
+q,
+samp,
+small,
+strong,
+sub,
+sup,
+b,
+i,
+hr,
+dl,
+dt,
+dd,
+ol,
+ul,
+li,
+fieldset,
+legend,
+label {
+  border: 0;
+  font-size: 100%;
+  vertical-align: baseline;
+  margin: 0;
+  padding: 0;
+}
+article,
+aside,
+canvas,
+figure,
+figure img,
+figcaption,
+hgroup,
+footer,
+header,
+nav,
+section,
+audio,
+video {
+  display: block;
+}
+table {
+  border-collapse: separate;
+  border-spacing: 0;
+}
+table caption,
+table th,
+table td {
+  text-align: left;
+  vertical-align: middle;
+}
+a img {
+  border: 0;
+}
+:focus {
+  outline: 0;
+}
+.jstree {
+  font-family: Arial;
+  list-style: none;
+}
+.jstree-wrap {
+  padding: 10px;
+  overflow: auto;
+}
+.jstree ul {
+  list-style: none;
+}
+.jstree-label {
+  color: #222;
+  text-decoration: none;
+  line-height: 24px;
+  height: 24px;
+  display: inline-block;
+  vertical-align: middle;
+  padding: 0 6px;
+  min-width: 10px;
+}
+.jstree-label:hover {
+  background: #e7f4f9;
+}
+.jstree-icon {
+  font-size: 12px;
+  width: 24px;
+  height: 24px;
+  line-height: 24px;
+  text-align: center;
+  vertical-align: middle;
+}
+.jstree-node {
+  margin-left: 20px;
+  white-space: nowrap;
+  margin-top: -1px;
+}
+.jstree-node.selected > .jstree-label {
+  background: #beebff;
+}
+.jstree-parent > .jstree-icon {
+  cursor: pointer;
+}
+.jstree-rename {
+  line-height: 22px;
+  height: 22px;
+  padding: 0 0;
+  border: 1px solid #ccc;
+  font-size: 16px;
+  margin-left: -1px;
+  width: 100%;
+  max-width: 150px;
+}
+.jstree-cm {
+  position: absolute;
+  top: 0;
+  left: 0;
+  background: #f5f5f5;
+  border: 1px solid #bbb;
+  -webkit-box-shadow: 0 0 3px #ccc;
+     -moz-box-shadow: 0 0 3px #ccc;
+          box-shadow: 0 0 3px #ccc;
+  -webkit-transition: opacity 0.3s ease-in;
+  -o-transition: opacity 0.3s ease-in;
+  -moz-transition: opacity 0.3s ease-in;
+  transition: opacity 0.3s ease-in;
+  padding: 2px;
+  display: none;
+  opacity: 0;
+  list-style: none;
+}
+.jstree-cm.opened {
+  opacity: 1;
+  display: block;
+}
+.jstree-cm-action {
+  padding: 4px 8px;
+  border-bottom: 1px solid #ddd;
+  margin-bottom: 1px;
+  cursor: pointer;
+}
+.jstree-cm-action:last-child {
+  margin: 0;
+  border: 0;
+}
+.jstree-cm-action:hover {
+  background: #e8eff7;
+  -webkit-box-shadow: 0 0 1px #0a6aa1;
+     -moz-box-shadow: 0 0 1px #0a6aa1;
+          box-shadow: 0 0 1px #0a6aa1;
+  z-index: 10;
+}
+.jstree-move-pointer {
+  display: none;
+  position: absolute;
+  top: 0;
+  left: 0;
+  z-index: 9;
+  line-height: 0;
+  margin-left: 6px;
+  margin-top: -1px;
+}
+.jstree-move-pointer.displayed {
+  display: block;
+}
+.jstree-move-pointer .fa {
+  font-size: 10px;
+}
+.jstree-move-title {
+  display: none;
+  position: absolute;
+  background: rgba(255, 255, 255, 0.5);
+  top: 0;
+  left: 0;
+  margin-top: 24px;
+  margin-left: 20px;
+  white-space: nowrap;
+}
+.jstree-move-title.displayed {
+  display: block;
+}
+.jstree-move-title.success .fa {
+  color: darkgreen;
+}
+.jstree-move-title.fail .fa {
+  color: #a80a00;
+}
+.jstree-mvttl-text {
+  margin-left: 7px;
+  font-size: 14px;
+}
+
+/*# sourceMappingURL=styles.css.map */

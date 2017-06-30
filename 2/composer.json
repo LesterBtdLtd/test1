@@ -1,0 +1,15 @@
+{
+  "name": "LesterBtdLtd/test1-2",
+  "description": "",
+  "minimum-stability": "dev",
+  "license": "MIT",
+  "authors": [
+    {
+      "name": "LesterBtdLtd",
+      "email": "lesterltd@mail.ru"
+    }
+  ],
+  "require": {
+    "php-cli/php-cli": "dev-master"
+  }
+}
