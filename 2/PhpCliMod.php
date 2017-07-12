@@ -1,5 +1,4 @@
 <?php
-
 if(!defined('STDIN')) exit;
 
 include "vendor/php-cli/php-cli/PhpCli.class.php";

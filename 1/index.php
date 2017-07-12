@@ -20,21 +20,16 @@ class OneDimensionArray
     }
 
     /**
-     * Returns array of random $arrLength with random integer values on diapason
-     * from $minValue to $maxValue
+     * Returns array of $arrLength with integer values on diapason
+     * from $minValue to $arrLength
      *
-     * @param int $arrLength
      * @param int $minValue
-     * @param int $maxValue
+     * @param int $arrLength
      * @return array
      */
-    private function _generate(int $arrLength = 10, int $minValue = 0 , int $maxValue = 20)
+    private function _generate(int $minValue = 0, int $arrLength = 10)
     {
-        $array = [];
-        for($i = 0; $i < $arrLength; $i++) {
-            $array[] = rand($minValue, $maxValue);
-        }
-        return $array;
+        return range($minValue, $arrLength);
     }
 }
 $ODA = new OneDimensionArray();

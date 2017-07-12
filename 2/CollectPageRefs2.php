@@ -19,7 +19,7 @@ class CollectPageRefs
         'Usage:'.PHP_EOL.
         '  php CollectPageRefs.php [OPTION] --url=<absolute-url>';
     private $phpCli;
-    private $urlHashes = [];
+    private $urls = [];
 
     public function __construct($argv)
     {
@@ -54,16 +54,18 @@ class CollectPageRefs
             // remove trailing slash
             $value = trim($value, '/');
 
-            // skip url if it is not unique
-            if(($hash = $this->_checkUniqueUrl($value)) === false) {
-                continue;
-            }
-            $this->_addUniqueUrl($hash);
+            $this->urls[] = $value;
+        }
 
-            $this->_printLine($value);
+        $this->urls = array_unique($this->urls);
+        foreach ($this->urls as $url)
+        {
+            $this->_printLine($url);
         }
         //$memoryUsage = memory_get_usage(false) - $memoryUsage;
-        $this->_clearUrlHashes();
+
+        $this->urls = []; // reset array
+
         //$time = microtime() - $time;
         //$memoryPeakUsage = memory_get_peak_usage(false) - $memoryPeakUsage;
 
@@ -98,39 +100,6 @@ class CollectPageRefs
         }
         // create XPath for easy searching by html
         return new DOMXPath($dom);
-    }
-
-    /**
-     * Checks url to unique
-     *
-     * @param $url
-     * @return bool|string - false or hash of url if url is not exists
-     */
-    private function _checkUniqueUrl($url) {
-        // hashing urls
-        $hash = md5($url);
-        // if hash exists, url is exists too, so skip it
-        if(isset($this->urlHashes[$hash])) {
-            return false;
-        }
-        return $hash;
-    }
-
-    /**
-     * Add unique url hash
-     *
-     * @param $urlHash
-     */
-    private function _addUniqueUrl($urlHash)
-    {
-        $this->urlHashes[$urlHash] = true; // "true" value is means nothing
-    }
-
-    /**
-     * Clears list of url hashes
-     */
-    private function _clearUrlHashes() {
-        $this->urlHashes = []; // clear array
     }
 
     /**
@@ -244,7 +213,7 @@ catch (Exception $ex)
 }
 
 /*
- * Time: 0.002801 - 0.002023
- * Memory: 9920
- * Difference between Memory Peaks: 8016
+ * Time: 0.001643 - 0.00154
+ * Memory: 16192
+ * Difference between Memory Peaks: 34440
  */

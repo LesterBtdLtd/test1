@@ -10,7 +10,7 @@
     } else {
         factory(jQuery);
     }
-})(function ($, undefined) {
+})(function ($) {
     "use strict";
 
     // a little jquery plugin for reverse selection
@@ -180,7 +180,7 @@
 
             for (var ind in list) {
                 if (list.hasOwnProperty(ind)) {
-                    var hasChildren = list[ind].hasOwnProperty('children') && Array.isArray(list[ind].children);
+                    var hasChildren = list[ind].hasOwnProperty('children') && list[ind].children instanceof Object;
                     var $node = this._createNode(list[ind].id, list[ind].text, hasChildren);
 
                     if (hasChildren) {
@@ -261,6 +261,12 @@
          */
         _removeNode: function _removeNode($liElem) {
             var $ulElem = $liElem.parent('ul');
+
+            // if it's root element
+            if ($ulElem.parents('.jstree-node:first').length === 0) {
+                // TODO: throw notification about it
+                return false;
+            }
 
             this._trigger('removingNode', { $liElem: $liElem });
 
@@ -464,15 +470,16 @@
 
             // impossible get the drag-on-element from "e", so calculating...
             $onElem = $(document.elementFromPoint(e.pageX, this._getScreenPosY(e.pageY))),
+                $onElemLi = $onElem.parent('li'),
                 moveTitleStatus = 'fail',
-                isOnElemParentForMoveEl = $onElem.parent('li').is($moveEl.parents('li:eq(1)')),
+                isOnElemParentForMoveEl = $onElemLi.is($moveEl.parents('li:eq(1)')),
                 cursorPos = '';
             this.movePointer.$onElemNow = $onElem;
 
             // is $onElem label and not $moveEl
             if ($onElem.is('.jstree-label') && !$onElem.is($moveEl)
             // $onElem is not child of $moveEl
-            && $onElem.parents("#" + $moveEl.parent('li').attr('id')).length <= 0) {
+            && $onElem.parents('#' + $moveEl.parent('li').attr('id')).length <= 0) {
 
                 this.movePointer.$lastTarget = $onElem;
                 moveTitleStatus = 'success';
@@ -499,7 +506,9 @@
                             cursorPos = 'center';
                         }
 
-                if (isOnElemParentForMoveEl === true && cursorPos === 'center') {
+                if (isOnElemParentForMoveEl === true && cursorPos === 'center' ||
+                // check that $onElemLi is not root and user moved cursor not in center
+                $onElemLi.parents('.jstree-node:first').length === 0 && cursorPos !== 'center') {
                     this._movePointerDisplay(false);
                     this.movePointer.$lastTarget = null;
                 } else {
@@ -528,6 +537,13 @@
             // *has another child than $whatLiElem
             whatParHasChild = $whatElem.parent('ul').children('li').length > 1,
                 liFinalOrderPos = 0;
+
+            var $parWhereElem = $whereNode.parents('.jstree-node:first');
+            // if elem moves like sibling of root
+            if ($parWhereElem.length === 0 && whereDirection !== 'center') {
+                // TODO: throw notification about error
+                return false;
+            }
 
             this._trigger('moving', { $whatElem: $whatElem, $whereNode: $whereNode });
 
@@ -583,7 +599,8 @@
             // is $whereNode <li>?
             $whereNode = $whereNode.is('li') ? $whereNode : $whereNode.closest('li');
             // now is. So get parent <li> of $whatElem
-            $whereNode = $whatElem.parents('li:first').is($whereNode) ? $whereNode : $whereNode.parents('li:first');
+            var $parWhatElem = $whatElem.parents('.jstree-node:first');
+            $whereNode = $parWhatElem.is($whereNode) ? $whereNode : $parWhatElem;
             $whatElem = $whatElem.is('li') ? $whatElem : $whatElem.children('li');
 
             this._trigger('moved', { $whatElem: $whatElem, $whereNode: $whereNode, orderPosition: liFinalOrderPos });

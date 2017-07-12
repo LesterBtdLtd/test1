@@ -15,15 +15,15 @@ class TreeController
 
     public function __construct()
     {
-        /*if(isset($_GET['action'])) {
-            $this->action = $_GET['action'];
-        } else {
-            throw new Exception('Action is not received!');
-        }*/
-
         $this->tree = new tree(db::get('sqlite://sqlite.db?charset=UTF-8&timezone=Europe/Kiev'), array('structure_table' => 'tree_struct', 'data_table' => 'tree_data', 'data' => array('nm')));
     }
 
+    /**
+     * Analyze database
+     *
+     * @param bool $getErrors
+     * @return array|bool
+     */
     private function _analyze(bool $getErrors = true)
     {
         return $this->tree->analyze($getErrors);
@@ -35,21 +35,19 @@ class TreeController
             'with_children' => $withChildren,
             'deep_children' => $deepChildren
         ];
-        $temp = $this->tree->get_node($nodeId, $options);
+        $node = $this->tree->get_node($nodeId, $options);
 
         // first node returns not in list, so we must to add it apart from all
         $rslt = [];
-        $this->_childrenDistributor([
-            'id' => $temp['id'],
-            'text' => $temp['nm'],
-            'parentId'  => $temp['pid'],
-            'children' => ($temp['rgt'] - $temp['lft'] > 1)
-        ], $rslt);
-        foreach($temp['children'] as $item) {
-            $this->_childrenDistributor($item, $rslt);
+        $this->_childrenDistributor($this->_dbNodeOptimizer($node), $rslt);
+
+        foreach($node['children'] as $child) {
+            $this->_childrenDistributor($this->_dbNodeOptimizer($child), $rslt);
         }
+
         $this->_childrenDistributorCorrector($rslt);
         $this->_resetChildrenDistributor();
+
         return $rslt;
     }
 
@@ -63,7 +61,7 @@ class TreeController
         $rslt = [];
 
         foreach($temp as $item) {
-            $this->_childrenDistributor($item, $rslt);
+            $this->_childrenDistributor($this->_dbNodeOptimizer($item), $rslt);
         }
         $this->_childrenDistributorCorrector($rslt);
         $this->_resetChildrenDistributor();
@@ -92,11 +90,6 @@ class TreeController
         return $this->tree->mv($nodeId, $parentId, $position);
     }
 
-    private function _copyNode(int $nodeId, int $parentId, int $position = 0)
-    {
-        return $this->tree->cp($nodeId, $parentId, $position);
-    }
-
     private function _getNodeId($args, $key = 'id')
     {
         $notRoot = isset($args[$key]) && $args[$key] !== '#';
@@ -104,16 +97,34 @@ class TreeController
         return $notRoot ? (int)$args[$key] : 0;
     }
 
-    private function _childrenDistributor($item, &$rsltArr)
+    /**
+     * Optimizes db item structure for user friendly structure
+     * @param $node
+     * @return array
+     */
+    private function _dbNodeOptimizer($node)
     {
-        $node = array(
-            'id' => $item['id'],
-            // TODO: quick fixed. Clear code
-            'text' => isset($item['nm']) ? $item['nm'] : (isset($item['text']) ? $item['text'] : ''),
-            'parentId'  => isset($item['pid']) ? $item['pid'] : (isset($item['parentId']) ? $item['parentId'] : ''),
-            'children' => isset($item['children']) ? $item['children'] : ($item['rgt'] - $item['lft'] > 1)
+        return array(
+            'id'        => $node['id'],
+            'text'      => $node['nm'],
+            'parentId'  => $node['pid'],
+            'children'  => $node['rgt'] - $node['lft'] > 1,
+            'position'  => $node['pos'],
         );
+    }
 
+    /**
+     * Places children in parents.
+     *
+     * NOTICE!
+     * Need to use _childrenDistributorCorrector after using this method
+     * because this logic requires two cycles for the correct placement of all.
+     *
+     * @param $node
+     * @param $rsltArr
+     */
+    private function _childrenDistributor($node, &$rsltArr)
+    {
         if(isset($this->nodeLinker[$node['parentId']]))
         {
             if(is_array($this->nodeLinker[$node['parentId']]['children']) == false)
@@ -121,7 +132,7 @@ class TreeController
                 $this->nodeLinker[$node['parentId']]['children'] = [];
             }
             // link node to children
-            $this->nodeLinker[$node['parentId']]['children'][] = &$node;
+            $this->nodeLinker[$node['parentId']]['children'][$node['position']] = &$node;
         }
         else
         {
@@ -137,11 +148,9 @@ class TreeController
         }
         $this->nodeLinker[$node['id']] = &$node;
     }
-
     /**
      * If some items was excepted during first cycle
      * we need little cycle for lost items
-     * @param $item
      * @param $rsltArr
      */
     private function _childrenDistributorCorrector(&$rsltArr) {
@@ -149,12 +158,43 @@ class TreeController
             $this->_childrenDistributor($val, $rsltArr);
         }
     }
-
+    /**
+     * Clear node linker array
+     */
     private function _resetChildrenDistributor()
     {
         $this->nodeLinker = [];
     }
 
+    /**
+     * Main function for doing some action
+     *
+     * @param $action - getNode | getChildren | createNode | renameNode | deleteNode | moveNode
+     * @param $args
+     *  Args depends from $action, so:
+     *  - getNode - gets node:
+     *      'id'            - (int) required. Node id
+     *      'withChildren'  - (bool) optional. Get node with single nested children. Default: false
+     *      'deepChildren'  - (bool) optional. Get node with multiple nested children. Default: false
+     * - getChildren - gets nested children:
+     *      'id'            - (int) required. Node id
+     *      'deepChildren'  - (bool) optional. Get node with multiple nested children. Default: false
+     * - createNode - creates node:
+     *      'id'        - (int) required. Node id
+     *      'position'  - (int) optional. Node position. Default: 0
+     *      'text'      - (int) optional. Node title. Default: 'New node'
+     * - renameNode - renames node:
+     *      'id'        - (int) required. Node id
+     *      'text'      - (int) optional. Node title. Default: 'Renamed node'
+     * - deleteNode - removes node:
+     *      'id'        - (int) required. Node id
+     * - moveNode - moves node:
+     *      'id'        - (int) required. Current node id. What you move
+     *      'parentId'  - (int) required. Parent node id. Where you move
+     *      'position'  - (int) optional. Node position among parent's children. Default: 0
+     *
+     * @return array|bool|null
+     */
     public function do($action, $args)
     {
         $result = null;
@@ -173,7 +213,7 @@ class TreeController
         }
         else if ($action == 'createNode')
         {
-            $position = isset($args['position']) ?: 0;
+            $position = isset($args['position']) ? $args['position'] : 0;
             $text = isset($args['text']) ? $args['text'] : 'New node';
             $result = $this->_createNode($nodeId, $position, $text);
         }
@@ -186,8 +226,7 @@ class TreeController
         {
             $result = $this->_deleteNode($nodeId);
         }
-        else if ($action == 'moveNode'
-            || $action == 'copyNode')
+        else if ($action == 'moveNode')
         {
             $parentId = $this->_getNodeId($args, 'parentId');
             $position = isset($args['position']) ? (int)$args['position'] : 0;
@@ -197,6 +236,9 @@ class TreeController
         return $result;
     }
 
+    /**
+     * Render view
+     */
     public function render()
     {
         include "view.php";
@@ -223,7 +265,7 @@ try {
     );
 }
 
-// if
+// if page used like API, return json-response and stop script
 if(!empty($response)) {
     header('Content-Type: application/json; charset=utf-8');
     echo json_encode($response);

@@ -47,7 +47,11 @@ require(['jquery', 'jstree'], ($, tree) => {
                 id: data.id,
                 text: data.newName
             })).fail(function (data) {
-                console.dir(data);
+                if(data instanceof Object) {
+                    console.dir(data.responseJSON.message);
+                } else {
+                    console.dir(data);
+                }
             });
         })
         .on('createdNode.jstree', function (e, data) {
@@ -66,7 +70,11 @@ require(['jquery', 'jstree'], ($, tree) => {
                 $treeCore.updateNode(data.newNode.attr('id'), { dataId : doneData.data.id });
 
             }).fail(function (data) {
-                console.dir(data);
+                if(data instanceof Object) {
+                    console.dir(data.responseJSON.message);
+                } else {
+                    console.dir(data);
+                }
             });
         })
         .on('removedNode.jstree', function (e, data) {
@@ -81,14 +89,18 @@ require(['jquery', 'jstree'], ($, tree) => {
                 }
 
             }).fail(function (data) {
-                console.dir(data);
+                if(data instanceof Object) {
+                    console.dir(data.responseJSON.message);
+                } else {
+                    console.dir(data);
+                }
             });
         })
         .on('moved.jstree', function (e, data) {
             $.get(app.ajaxUrl + '?' + $.param({
                 action : 'moveNode',
                 id : data.$whatElem.data('id'),
-                parentId : data.$whereNode.data('id'),
+                parentId : data.$whereNode !== 0 ? data.$whereNode.data('id') : 0,
                 position : data.orderPosition
             })).done(function (doneData) {
 
@@ -98,7 +110,11 @@ require(['jquery', 'jstree'], ($, tree) => {
                 }
 
             }).fail(function (data) {
-                console.dir(data);
+                if(data instanceof Object) {
+                    console.dir(data.responseJSON.message);
+                } else {
+                    console.dir(data);
+                }
             });
     });
 });
