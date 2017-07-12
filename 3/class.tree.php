@@ -664,9 +664,12 @@ class tree
 					"SELECT ".implode(", ", $temp_fields)." FROM ".$this->options['structure_table']." "
 			)) { return false; }
 		}
-		if(!$this->db->query("TRUNCATE TABLE ".$this->options['structure_table']."")) {
+		if(!$this->db->query("DELETE FROM ".$this->options['structure_table']."")) {
 			return false;
 		}
+        if(!$this->db->query("VACUUM;")) {
+            return false;
+        }
 		if(!$this->db->query("" .
 			"INSERT INTO ".$this->options['structure_table']." (" .
 					"".$this->options['structure']["id"].", " .
