@@ -1,19 +1,11 @@
 <?php
-error_reporting(E_ALL);
 
 if(!defined('STDIN')) exit;
 
 include "PhpCliMod.php";
+include "CollectPageRefsException.php";
 
-class CollectPageRefsException extends Exception
-{
-    public function __construct($message = "", $code = 0, Throwable $previous = null)
-    {
-        parent::__construct($message, $code, $previous);
-    }
-}
-
-class CollectPageRefs
+class CollectPageRefs2
 {
     private $description = 'Script for getting all unique hyperlinks on the web-page'.PHP_EOL.
         'Usage:'.PHP_EOL.
@@ -196,20 +188,6 @@ class CollectPageRefs
     {
         echo $str . PHP_EOL;
     }
-}
-
-$CPR = new CollectPageRefs($argv);
-try
-{
-    $CPR->parse();
-}
-catch (CollectPageRefsException $ex)
-{
-    echo $ex->getCode() . ': ' . $ex->getMessage() . PHP_EOL;
-}
-catch (Exception $ex)
-{
-    echo $ex->getCode() . ': ' . $ex->getMessage() . PHP_EOL;
 }
 
 /*
